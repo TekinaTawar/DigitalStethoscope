@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.22.1)
 
 # Declares and names the project.
 
-project("digitalstethoscopeV2")
+project("wavetablesynthesizer")
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -16,14 +16,20 @@ project("digitalstethoscopeV2")
 # Gradle automatically packages shared libraries with your APK.
 
 add_library( # Sets the name of the library.
-        digitalstethoscopeV2
+        wavetablesynthesizer
 
         # Sets the library as a shared library.
         SHARED
 
         # Provides a relative path to your source file(s).
         WavetableSynthesizer.cpp
+        OboeAudioPlayer.cpp
+        WavetableOscillator.cpp
         digitalstethoscopeV2.cpp)
+
+find_package(oboe REQUIRED CONFIG)
+
+
 
 include_directories(include)
 
@@ -45,8 +51,6 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-        digitalstethoscopeV2
-
-        # Links the target library to the log library
-        # included in the NDK.
+        wavetablesynthesizer
+        oboe::oboe
         ${log-lib})

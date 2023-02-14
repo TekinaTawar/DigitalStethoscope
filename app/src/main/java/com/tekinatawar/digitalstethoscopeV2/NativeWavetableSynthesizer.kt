@@ -20,7 +20,7 @@ class NativeWavetableSynthesizer : WavetableSynthesizer, DefaultLifecycleObserve
 
     companion object {
         init {
-            System.loadLibrary("digitalstethoscopeV2")
+            System.loadLibrary("wavetablesynthesizer")
         }
     }
 
