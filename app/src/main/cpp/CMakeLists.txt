@@ -25,6 +25,7 @@ add_library( # Sets the name of the library.
         WavetableSynthesizer.cpp
         OboeAudioPlayer.cpp
         WavetableOscillator.cpp
+        WavetableFactory.cpp
         digitalstethoscopeV2.cpp)
 
 find_package(oboe REQUIRED CONFIG)
