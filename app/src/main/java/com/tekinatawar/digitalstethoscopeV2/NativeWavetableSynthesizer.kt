@@ -26,7 +26,8 @@ class NativeWavetableSynthesizer : WavetableSynthesizer, DefaultLifecycleObserve
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-
+        // synchronized is a kotlin function that will make sure that only one thread can access the code inside the block
+        // so if something tries to access this code while it's being executed, it won't be able to.
         synchronized(synthesizerMutex){
             createNativeHandleIfNotExists()
         }
@@ -48,10 +49,15 @@ class NativeWavetableSynthesizer : WavetableSynthesizer, DefaultLifecycleObserve
         if (synthesizerHandle != 0L) {
             return
         }
-
+        // create is an external function that will create a native object and return the memory address of it
         synthesizerHandle = create()
     }
 
+    // next we implement the remaining methods from the interface of model. each of these methods will look basically the same.
+    // first we will move the execution to a differnt thread not to put load on the UI thread,
+    // ...with Context(Dispatchers.Default) will do that for us. (we can do this because this is a suspended function which will be called in some coroutine context)
+    // ...dispather's default store a certain pool of threads and body will be moved to it.
+    // Next we will declare a synchronized block (also called lock object) then ensure that native handle exists and then call the native function...
 
     override suspend fun play()  = withContext(Dispatchers.Default){
         synchronized(synthesizerMutex){
@@ -70,6 +76,7 @@ class NativeWavetableSynthesizer : WavetableSynthesizer, DefaultLifecycleObserve
     override suspend fun isPlaying(): Boolean = withContext(Dispatchers.Default) {
         synchronized(synthesizerMutex){
             createNativeHandleIfNotExists()
+            // @withContext is used to tell we are returning from differnt context
             return@withContext isPlaying(synthesizerHandle)
         }
     }
@@ -91,6 +98,7 @@ class NativeWavetableSynthesizer : WavetableSynthesizer, DefaultLifecycleObserve
     override suspend fun setWavetable(wavetable: Wavetable) {
         synchronized(synthesizerMutex) {
             createNativeHandleIfNotExists()
+            // ordinal is the int value of the enum
             setWavetable(synthesizerHandle, wavetable.ordinal)
         }
     }
